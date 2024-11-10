@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Prediction App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #0066cc;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        input {
+            padding: 8px;
+            width: 80%;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #004080;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Football Prediction App</h1>
+        
+        <div>
+            <label for="team1">Team 1 Name:</label>
+            <input type="text" id="team1" placeholder="Enter Team 1 Name" required>
+            
+            <label for="team1_avg_score">Team 1 Avg Goals Scored:</label>
+            <input type="number" id="team1_avg_score" placeholder="Enter Avg Goals Scored" step="0.01" required>
+            
+            <label for="team1_avg_concede">Team 1 Avg Goals Conceded:</label>
+            <input type="number" id="team1_avg_concede" placeholder="Enter Avg Goals Conceded" step="0.01" required>
+        </div>
+        
+        <div>
+            <label for="team2">Team 2 Name:</label>
+            <input type="text" id="team2" placeholder="Enter Team 2 Name" required>
+            
+            <label for="team2_avg_score">Team 2 Avg Goals Scored:</label>
+            <input type="number" id="team2_avg_score" placeholder="Enter Avg Goals Scored" step="0.01" required>
+            
+            <label for="team2_avg_concede">Team 2 Avg Goals Conceded:</label>
+            <input type="number" id="team2_avg_concede" placeholder="Enter Avg Goals Conceded" step="0.01" required>
+        </div>
+        
+        <button onclick="predictMatch()">Predict Match</button>
+        
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function predictMatch() {
+            // Get input values
+            const team1 = document.getElementById('team1').value;
+            const team1AvgScore = parseFloat(document.getElementById('team1_avg_score').value);
+            const team1AvgConcede = parseFloat(document.getElementById('team1_avg_concede').value);
+            
+            const team2 = document.getElementById('team2').value;
+            const team2AvgScore = parseFloat(document.getElementById('team2_avg_score').value);
+            const team2AvgConcede = parseFloat(document.getElementById('team2_avg_concede').value);
+            
+            // Validate inputs
+            if (!team1 || !team2 || isNaN(team1AvgScore) || isNaN(team1AvgConcede) || isNaN(team2AvgScore) || isNaN(team2AvgConcede)) {
+                document.getElementById('result').innerHTML = "Please fill in all fields correctly.";
+                return;
+            }
+            
+            // Calculate predicted scores
+            const team1PredictedScore = (team1AvgScore + team2AvgConcede) / 2;
+            const team2PredictedScore = (team2AvgScore + team1AvgConcede) / 2;
+            
+            let result = '';
+
+            // Determine the winner and generate score predictions
+            if (team1PredictedScore > team2PredictedScore) {
+                result = `<strong>${team1}</strong> is predicted to win! Possible scores:<br>`;
+                result += generateScorePredictions(team1PredictedScore, team2PredictedScore);
+            } else if (team2PredictedScore > team1PredictedScore) {
+                result = `<strong>${team2}</strong> is predicted to win! Possible scores:<br>`;
+                result += generateScorePredictions(team2PredictedScore, team1PredictedScore);
+            } else {
+                result = `It's likely to be a draw. Possible scores:<br>`;
+                result += generateDrawPredictions(team1PredictedScore);
+            }
+            
+            document.getElementById('result').innerHTML = result;
+        }
+
+        // Generate three possible score predictions
+        function generateScorePredictions(winnerScore, loserScore) {
+            const predictions = [];
+            predictions.push(`${Math.round(winnerScore)} - ${Math.floor(loserScore)}`);
+            predictions.push(`${Math.ceil(winnerScore)} - ${Math.round(loserScore)}`);
+            predictions.push(`${Math.round(winnerScore + 0.5)} - ${Math.floor(loserScore)}`);
+            
+            return predictions.join('<br>');
+        }
+
+        // Generate draw predictions
+        function generateDrawPredictions(score) {
+            const predictions = [];
+            const roundedScore = Math.round(score);
+            predictions.push(`${roundedScore} - ${roundedScore}`);
+            predictions.push(`${roundedScore + 1} - ${roundedScore + 1}`);
+            predictions.push(`${roundedScore - 1} - ${roundedScore - 1}`);
+            
+            return predictions.join('<br>');
+        }
+    </script>
+</body>
+</html>
